@@ -54,6 +54,20 @@
                 <jet-input id="email" type="email" class="mt-1 block w-full" v-model="form.email" />
                 <jet-input-error :message="form.error('email')" class="mt-2" />
             </div>
+
+            <!-- Organization -->
+            <div class="col-span-6 sm:col-span-4">
+              <jet-label for="organization" value="Organization" />
+              <jet-input id="organization" type="text" class="mt-1 block w-full" v-model="form.organization" />
+              <jet-input-error :message="form.error('organization')" class="mt-2" />
+            </div>
+
+            <!-- Phone -->
+            <div class="col-span-6 sm:col-span-4">
+              <jet-label for="phone" value="Phone Number" />
+              <jet-input id="phone" type="text" class="mt-1 block w-full" v-model="form.phone" />
+              <jet-input-error :message="form.error('phone')" class="mt-2" />
+            </div>
         </template>
 
         <template #actions>
@@ -90,7 +104,7 @@
             JetSecondaryButton,
         },
 
-        props: ['name', 'email'],
+        props: ['name', 'email', 'phone', 'organization'],
 
         data() {
             return {
@@ -98,6 +112,8 @@
                     '_method': 'PUT',
                     name: this.name,
                     email: this.email,
+                    organization: this.organization,
+                    phone: this.phone,
                     photo: null,
                 }, {
                     bag: 'updateProfileInformation',
