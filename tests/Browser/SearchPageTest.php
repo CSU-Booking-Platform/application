@@ -73,7 +73,7 @@ class SearchPageTest extends DuskTestCase
             })->pause(500);
 
             $browser->click("#createBookingRequest")->pause(5000)
-                ->assertSee("31 days");
+                ->assertSee("30 days");
         });
     }
 
