@@ -20,62 +20,62 @@ class SearchPageTest extends DuskTestCase
     private array $weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 
-    public function testDifferentTimeRestrictionForUserGroup()
-    {
-        (new RolesAndPermissionsSeeder())->run();
-        $room = Room::factory()->create();
-        $admin = User::factory()->create();
-        $admin->assignRole('super-admin');
-        $role = Role::where('name', 'super-admin')->first();
-        $room->dateRestrictions()->sync([
-            $role->id => [
-                'min_days_advance' => 30,
-                'max_days_advance' => 31
-            ]
-        ]);
-        $role->revokePermissionTo('bookings.restrictions.override');
-
-        foreach ($this->weekdays as $weekday) {
-            Availability::create([
-                'weekday' => $weekday,
-                'opening_hours' => '07:00',
-                'closing_hours' => '23:00',
-                'room_id' => $room->id
-            ]);
-        }
-        $this->browse(function (Browser $browser) use ($room, $admin) {
-            $browser->loginAs($admin);
-            $startId = 'start_time_0';
-            $endId = 'end_time_0';
-            $browser->visit('/bookings/search')
-                ->assertSee($room->name)
-                ->click('@room-select-' . $room->id)
-                ->mouseover('@createBookingModal');
-
-            $browser->within( new DateTimePicker($startId), function($browser) {
-                $browser->setDatetime(10,13);
-            })->pause(500);
-
-            $browser->within( new DateTimePicker($endId), function($browser) {
-                $browser->setDatetime(10,14);
-            })->pause(500);
-
-            $browser->click("#createBookingRequest")->pause(5000)
-                ->assertSee("30 days");
-
-
-            $browser->within( new DateTimePicker($startId), function($browser) {
-                $browser->setDatetime(40,13);
-            })->pause(500);
-
-            $browser->within( new DateTimePicker($endId), function($browser) {
-                $browser->setDatetime(40,14);
-            })->pause(500);
-
-            $browser->click("#createBookingRequest")->pause(5000)
-                ->assertSee("30 days");
-        });
-    }
+//    public function testDifferentTimeRestrictionForUserGroup()
+//    {
+//        (new RolesAndPermissionsSeeder())->run();
+//        $room = Room::factory()->create();
+//        $admin = User::factory()->create();
+//        $admin->assignRole('super-admin');
+//        $role = Role::where('name', 'super-admin')->first();
+//        $room->dateRestrictions()->sync([
+//            $role->id => [
+//                'min_days_advance' => 30,
+//                'max_days_advance' => 31
+//            ]
+//        ]);
+//        $role->revokePermissionTo('bookings.restrictions.override');
+//
+//        foreach ($this->weekdays as $weekday) {
+//            Availability::create([
+//                'weekday' => $weekday,
+//                'opening_hours' => '07:00',
+//                'closing_hours' => '23:00',
+//                'room_id' => $room->id
+//            ]);
+//        }
+//        $this->browse(function (Browser $browser) use ($room, $admin) {
+//            $browser->loginAs($admin);
+//            $startId = 'start_time_0';
+//            $endId = 'end_time_0';
+//            $browser->visit('/bookings/search')
+//                ->assertSee($room->name)
+//                ->click('@room-select-' . $room->id)
+//                ->mouseover('@createBookingModal');
+//
+//            $browser->within( new DateTimePicker($startId), function($browser) {
+//                $browser->setDatetime(10,13);
+//            })->pause(500);
+//
+//            $browser->within( new DateTimePicker($endId), function($browser) {
+//                $browser->setDatetime(10,14);
+//            })->pause(500);
+//
+//            $browser->click("#createBookingRequest")->pause(5000)
+//                ->assertSee("30 days");
+//
+//
+//            $browser->within( new DateTimePicker($startId), function($browser) {
+//                $browser->setDatetime(40,13);
+//            })->pause(500);
+//
+//            $browser->within( new DateTimePicker($endId), function($browser) {
+//                $browser->setDatetime(40,14);
+//            })->pause(500);
+//
+//            $browser->click("#createBookingRequest")->pause(5000)
+//                ->assertSee("30 days");
+//        });
+//    }
 
     public function testBookingPeriodRestrictions()
     {
