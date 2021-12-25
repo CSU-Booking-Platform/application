@@ -25,6 +25,7 @@ class RoomSeeder extends Seeder
         $room = Room::create([
             'name' => 'CSU Lounge',
             'number' => 'H-709',
+            'description' => 'The CSU Lounge',
             'floor' => '7',
             'building' => 'Hall',
             'status' => 'available',
@@ -53,7 +54,7 @@ class RoomSeeder extends Seeder
 
         foreach ($weekdays as $weekday) {
             Availability::create([
-                'weekday' => $weekday, 
+                'weekday' => $weekday,
                 'opening_hours' => '07:00',
                 'closing_hours' => '23:00',
                 'room_id' => $room->id
@@ -64,6 +65,7 @@ class RoomSeeder extends Seeder
         $room = Room::create([
             'name' => 'CSU Cafeteria',
             'number' => 'H-718',
+            'description' => 'The CSU Cafeteria',
             'floor' => '7',
             'building' => 'Hall',
             'status' => 'available',
@@ -92,7 +94,7 @@ class RoomSeeder extends Seeder
 
         foreach ($weekdays as $weekday) {
         Availability::create([
-            'weekday' => $weekday, 
+            'weekday' => $weekday,
             'opening_hours' => '07:00',
             'closing_hours' => '23:00',
             'room_id' => $room->id
@@ -103,6 +105,7 @@ class RoomSeeder extends Seeder
         $room = Room::create([
             'name' => 'Modular Conference Room',
             'number' => 'H-711-4',
+            'description' => 'The CSU Modular Conference Room',
             'floor' => '7',
             'building' => 'Hall',
             'status' => 'available',
@@ -131,16 +134,17 @@ class RoomSeeder extends Seeder
 
         foreach ($weekdays as $weekday) {
             Availability::create([
-                'weekday' => $weekday, 
+                'weekday' => $weekday,
                 'opening_hours' => '10:00',
                 'closing_hours' => '18:00',
                 'room_id' => $room->id
             ]);
-            } 
+            }
 
             $room = Room::create([
                 'name' => 'Executive Conference Room',
                 'number' => 'H-711-3',
+                'description' => 'The CSU Executive Conference Room',
                 'floor' => '7',
                 'building' => 'Hall',
                 'status' => 'available',
@@ -166,19 +170,20 @@ class RoomSeeder extends Seeder
                 'max_days_advance' => 200,
                 'room_type' => 'Conference'
             ]);
-    
+
             foreach ($weekdays as $weekday) {
                 Availability::create([
-                    'weekday' => $weekday, 
+                    'weekday' => $weekday,
                     'opening_hours' => '10:00',
                     'closing_hours' => '18:00',
                     'room_id' => $room->id
                 ]);
-                } 
+                }
 
                 $room = Room::create([
                     'name' => 'Art Nook',
                     'number' => 'H-725',
+                    'description' => 'The CSU Art Nook',
                     'floor' => '7',
                     'building' => 'Hall',
                     'status' => 'available',
@@ -204,18 +209,19 @@ class RoomSeeder extends Seeder
                     'max_days_advance' => 200,
                     'room_type' => 'Mezzanine'
                 ]);
-        
+
                 foreach ($weekdays as $weekday) {
                     Availability::create([
-                        'weekday' => $weekday, 
+                        'weekday' => $weekday,
                         'opening_hours' => '07:00',
                         'closing_hours' => '23:00',
                         'room_id' => $room->id
                     ]);
-                    } 
+                    }
                     $room = Room::create([
                         'name' => 'CSU Information table',
                         'number' => 'H-220-90',
+                        'description' => 'The CSU Information Table',
                         'floor' => '2',
                         'building' => 'Hall',
                         'status' => 'available',
@@ -241,18 +247,19 @@ class RoomSeeder extends Seeder
                         'max_days_advance' => 200,
                         'room_type' => 'Mezzanine'
                     ]);
-            
+
                     foreach ($weekdays as $weekday) {
                         Availability::create([
-                            'weekday' => $weekday, 
+                            'weekday' => $weekday,
                             'opening_hours' => '07:00',
                             'closing_hours' => '23:00',
                             'room_id' => $room->id
                         ]);
-                        } 
+                        }
                         $room = Room::create([
                             'name' => 'CSU Kiosk',
                             'number' => 'H-220-90',
+                            'description' => 'The CSU Kiosk',
                             'floor' => '2',
                             'building' => 'Hall',
                             'status' => 'available',
@@ -278,14 +285,14 @@ class RoomSeeder extends Seeder
                             'max_days_advance' => 200,
                             'room_type' => 'Mezzanine'
                         ]);
-                
+
                         foreach ($weekdays as $weekday) {
                             Availability::create([
-                                'weekday' => $weekday, 
+                                'weekday' => $weekday,
                                 'opening_hours' => '07:00',
                                 'closing_hours' => '23:00',
                                 'room_id' => $room->id
                             ]);
-                            } 
+                            }
     }
 }

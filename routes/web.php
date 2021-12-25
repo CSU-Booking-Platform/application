@@ -93,6 +93,10 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
             Route::get('/', [RoomController::class, 'index'])
                 ->name('index');
 
+            Route::post('updateRoomImage', [RoomController::class, 'updateRoomImage'])
+                ->name('rooms.updateRoomImage')
+                ->middleware(['permission:rooms.update']);
+
             Route::post('/', [RoomController::class, 'store'])
                 ->name('store')
                 ->middleware(['permission:rooms.create']);

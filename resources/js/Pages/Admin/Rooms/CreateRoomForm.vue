@@ -11,6 +11,23 @@
           <jet-input-error :message="createRoomForm.error('name')" class="mt-2"/>
         </div>
 
+        <div class="mb-3">
+          <jet-label for="description" value="Room Description"/>
+          <jet-input id="description" type="text" class="mt-1 block w-full" v-model="createRoomForm.description" autofocus/>
+          <jet-input-error :message="createRoomForm.error('description')" class="mt-2"/>
+        </div>
+
+        <div class="mb-3">
+          <jet-label for="image" value="Room Image"/>
+          <input type="file" ref="photo" @change="updatePhotoPreview">
+          <jet-input-error :message="createRoomForm.error('image')" class="mt-2"/>
+          <div>
+             <span v-if="photoPreview" class="block rounded-full w-20 h-20"
+                   :style="'background-size: cover; background-repeat: no-repeat; background-position: center center; background-image: url(\'' + photoPreview + '\');'">
+             </span>
+          </div>
+        </div>
+
         <div class="mb-3 flex flex-row space-x-1">
           <div>
             <jet-label for="roomnumber" value="Room Number"/>
@@ -288,9 +305,12 @@ export default {
 
   data() {
     return {
+      photoPreview: null,
       createRoomForm: this.$inertia.form(
         {
           name: "",
+          description: "",
+          image: "",
           number: "",
           floor: "",
           building: "",
@@ -366,6 +386,16 @@ export default {
       } else {
         this.showAvailabilities = !this.showAvailabilities;
       }
+    },
+    updatePhotoPreview(e) {
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        this.photoPreview = e.target.result;
+      };
+
+      reader.readAsDataURL(this.$refs.photo.files[0]);
+      this.createRoomForm.image = e.target.files[0];
     },
   },
 };

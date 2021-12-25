@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 
 class Room extends Model
 {
@@ -21,6 +23,8 @@ class Room extends Model
      */
     protected $fillable = [
         'name',
+        'description',
+        'image',
         'number',
         'floor',
         'building',
@@ -38,6 +42,10 @@ class Room extends Model
      */
     protected $casts = [
         'attributes' => 'array',
+    ];
+
+    protected $appends = [
+        'image_url'
     ];
 
     /**
@@ -245,6 +253,16 @@ class Room extends Model
         $fail('The room cannot be booked for less than 30 min');
       }
   }
+
+    public function getImageUrlAttribute()
+    {
+        if ($this->image) {
+            return asset($this->image);
+        }
+        else {
+            return "";
+        }
+    }
 
 
 

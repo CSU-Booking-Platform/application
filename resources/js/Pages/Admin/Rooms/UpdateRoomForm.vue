@@ -30,6 +30,18 @@
                     <jet-input-error :message="form.error('number')" class="mt-2" />
                 </div>
 
+              <div class="m-6">
+                <jet-label for="description" value="Room Description" />
+                <jet-input
+                  id="description"
+                  type="description"
+                  class="mt-1 block w-full"
+                  v-model="form.description"
+                  autofocus
+                />
+                <jet-input-error :message="form.error('description')" class="mt-2" />
+              </div>
+
                 <div class="m-6">
                     <jet-label for="floor" value="Floor" />
                     <jet-input
@@ -42,6 +54,26 @@
                     />
                     <jet-input-error :message="form.error('floor')" class="mt-2" />
                 </div>
+
+              <div class="m-6">
+                <img v-if="form.image_url" :src="form.image_url" class="img-responsive" height="90" width="90" alt="Room Image Preview">
+                <jet-label for="new_img" value="Room Image"/>
+                <input id="new_img" ref="newImage" name="new_img" type="file"  @change="selectFile">
+                <jet-input-error :message="imageForm.error('new_image')" class="mt-2"/>
+                <div v-if="imageUpdateSuccessful"> Image Update Successful.</div>
+              </div>
+
+              <div class="m-6">
+                <jet-button
+                  id="updateRoomImage"
+                  class="ml-2"
+                  @click.native="updateRoomImage"
+                  :class="{ 'opacity-25': imageForm.processing }"
+                  :disabled="imageForm.processing || !imageForm.new_image"
+                >
+                  Update Image
+                </jet-button>
+              </div>
 
                 <div class="m-6">
                     <jet-label for="building" value="Building" />
@@ -275,6 +307,7 @@ import JetSecondaryButton from "@src/Jetstream/SecondaryButton";
 import JetLabel from "@src/Jetstream/Label";
 import JetInput from "@src/Jetstream/Input";
 import JetInputError from "@src/Jetstream/InputError";
+import axios from "axios";
 
 export default {
     components: {
@@ -306,10 +339,21 @@ export default {
 
     data() {
         return {
+            imageUpdateSuccessful: false,
+            imageForm: this.$inertia.form(
+              {
+                    room_id: "",
+                    new_image:"",
+              },{
+                bag: "updateRoomImage"
+              }),
             form: this.$inertia.form(
                 {
                     name: "",
                     number: null,
+                    description: "",
+                    image_url: "",
+                    new_img: "",
                     floor: "",
                     building: "",
                     projector:  false,
@@ -389,6 +433,21 @@ export default {
                     }
                 });
         },
+
+      updateRoomImage() {
+        this.imageForm.room_id = this.room.id;
+        this.imageForm.post('/admin/rooms/updateRoomImage').then(() => {
+          if (this.imageForm.successful) {
+            this.imageUpdateSuccessful = true;
+          } else{
+            this.imageUpdateSuccessful = false;
+          }
+        });
+      },
+        selectFile(event) {
+          this.imageForm.new_image= event.target.files[0];
+          console.log(this.imageForm)
+        },
         toggle() {
             this.showAvailabilities = !this.showAvailabilities
         },
@@ -429,6 +488,8 @@ export default {
         room(room) {
             this.form.name = room?.name;
             this.form.number = room?.number;
+            this.form.description = room?.description;
+            this.form.image_url = room?.image_url;
             this.form.floor = room?.floor;
             this.form.building = room?.building;
             this.form.projector = room?.attributes.projector;

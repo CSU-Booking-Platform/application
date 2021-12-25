@@ -19,6 +19,7 @@ use Illuminate\Http\Response;
 use Illuminate\Routing\Redirector;
 use Illuminate\Validation\Rule;
 use Inertia\ResponseFactory;
+use Illuminate\Support\Facades\Storage;
 
 class RoomController extends Controller
 {
@@ -65,6 +66,8 @@ class RoomController extends Controller
 
         $request->validateWithBag('createRoom', [
             'name' => ['required', 'string', self::MAX_255],
+            'description' => ['required', 'string', self::MAX_255],
+            'image' => 'required|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
             'number' => ['required', 'string', self::MAX_255],
             'floor' => ['required', 'integer'],
             'building' => ['required', Rule::in(config(self::BUILDING_NAMES))],
@@ -101,8 +104,14 @@ class RoomController extends Controller
             'availabilities.Sunday.opening_hours' => 'nullable|required_with:availabilities.Sunday.closing_hours|before:availabilities.Sunday.closing_hours',
             'availabilities.Sunday.closing_hours' => 'nullable|required_with:availabilities.Sunday.opening_hours|after:availabilities.Sunday.opening_hours',
         ]);
+        $path = '/storage/' . Storage::disk('public')->putFileAs(
+                'rooms',
+        $request->file('image'),
+        $request->file('image')->hashName());
         $room = Room::create([
             'name' => $request->name,
+            'description' => $request->description,
+            'image'=> $path,
             'number' => $request->number,
             'floor' => $request->floor,
             'building' => $request->building,
@@ -159,6 +168,7 @@ class RoomController extends Controller
     {
         $request->validateWithBag('updateRoom', [
             'name' => ['required', 'string', self::MAX_255],
+            'description' => ['required', 'string', self::MAX_255],
             'number' => ['required', 'string', self::MAX_255],
             'floor' => ['required', 'integer'],
             'building' => ['required', Rule::in(config(self::BUILDING_NAMES))],
@@ -311,5 +321,28 @@ class RoomController extends Controller
 
       }
       return response()->json($query->get());
+    }
+
+    /**
+     * Update room image individually
+     *
+     * @param Request $request
+     * @return Application|RedirectResponse|Response|Redirector
+     * @throws Exception
+     */
+    public function updateRoomImage(Request $request)
+    {
+        $request->validate([
+            'new_image' => 'required|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
+            'room_id' => ['required', 'integer'],
+        ]);
+        $room = Room::findOrFail($request->room_id);
+        $path = '/storage/' . Storage::disk('public')->putFileAs(
+                'rooms',
+                $request->file('new_image'),
+                $request->file('new_image')->hashName());
+        $room->update(['image' => $path]);
+        $room->save();
+        return back();
     }
 }

@@ -2,6 +2,9 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 use App\Models\Room;
 use App\Models\User;
@@ -22,9 +25,14 @@ class RoomControllerTest extends TestCase
         $room = Room::factory()->make();
         $this->assertDatabaseMissing('rooms', ['name' => $room->name]);
 
+        Storage::fake('public');
+        $random = Str::random(10);
+        $file = UploadedFile::fake()->image($random . '.png');
         $response = $this->actingAs($this->createUserWithPermissions(['rooms.create']))->post('/admin/rooms', [
             'name' => $room->name,
             'number' => $room->number,
+            'description' => $room->description,
+            'image' => $file,
             'floor' => $room->floor,
             'building' => $room->building,
             'status' => $room->status,
@@ -50,9 +58,12 @@ class RoomControllerTest extends TestCase
         ]);
         $response->assertSessionHasNoErrors();
         $response->assertStatus(302);
+        Storage::disk('public')->assertExists('rooms/' . $file->hashName());
         $this->assertDatabaseHas('rooms', [
             'name' => $room->name,
             'number' => $room->number,
+            'description' => $room->description,
+            'image' => '/storage/rooms/' . $file->hashName(),
             'floor' => $room->floor,
             'building' => $room->building,
             'status' => $room->status,
@@ -86,14 +97,19 @@ class RoomControllerTest extends TestCase
     public function admins_can_create_rooms_with_availabilities()
     {
         $room = Room::factory()->make();
-
         $this->assertDatabaseMissing('rooms', ['name' => $room->name]);
+
+        Storage::fake('public');
+        $random = Str::random(10);
+        $file = UploadedFile::fake()->image($random . '.png');
 
         $response = $this->actingAs($this->createUserWithPermissions(['rooms.create']))->post(
             '/admin/rooms',
             [
                 'name' => $room->name,
                 'number' => $room->number,
+                'image' => $file,
+                'description' => $room->description,
                 'floor' => $room->floor,
                 'building' => $room->building,
                 'status' => $room->status,
@@ -119,16 +135,20 @@ class RoomControllerTest extends TestCase
                         'opening_hours' => '12:00:00',
                         'closing_hours' => '13:00:00'
                     ]
-                ]
+                ],
+
             ]
         );
+        Storage::disk('public')->assertExists('rooms/' . $file->hashName());
 
         $response->assertStatus(302);
 
         $this->assertDatabaseHas('rooms', [
             'name' => $room->name,
+            'image' => '/storage/rooms/' . $file->hashName(),
             'number' => $room->number,
             'floor' => $room->floor,
+            'description' => $room->description,
             'building' => $room->building,
             'status' => $room->status,
             'room_type' => $room->room_type,
@@ -182,7 +202,7 @@ class RoomControllerTest extends TestCase
         $room = Room::factory()->create();
 
         $this->assertDatabaseHas('rooms', [
-            'name' => $room->name, 'number' => $room->number,
+            'name' => $room->name, 'number' => $room->number, 'description' => $room->description,
             'floor' => $room->floor, 'building' => $room->building,
             'status' => $room->status, 'attributes' => json_encode($room->attributes),
         ]);
@@ -191,6 +211,7 @@ class RoomControllerTest extends TestCase
             'name' => 'the room',
             'number' => '24',
             'floor' => '2009',
+            'description' => 'my description',
             'building' => config(self::BUILDING_NAMES)[0],
             'status' => 'available',
             'room_type' => config(self::ROOM_TYPES)[0],
@@ -218,6 +239,7 @@ class RoomControllerTest extends TestCase
             'name' => 'the room',
             'number' => '24',
             'floor' => '2009',
+            'description' => 'my description',
             'building' => config(self::BUILDING_NAMES)[0],
             'status' => 'available',
             'room_type' => config(self::ROOM_TYPES)[0],
@@ -251,7 +273,7 @@ class RoomControllerTest extends TestCase
 
         $this->assertDatabaseHas('rooms', [
             'name' => $room->name, 'number' => $room->number,
-            'floor' => $room->floor, 'building' => $room->building,
+            'floor' => $room->floor, 'building' => $room->building, 'description' => $room->description,
             'status' => $room->status, 'attributes' => json_encode($room->attributes),
         ]);
 
@@ -259,6 +281,7 @@ class RoomControllerTest extends TestCase
             'name' => 'the room',
             'number' => '24',
             'floor' => '2009',
+            'description' => 'my description',
             'building' => config(self::BUILDING_NAMES)[0],
             'status' => 'available',
             'room_type' => config(self::ROOM_TYPES)[0],
@@ -292,6 +315,7 @@ class RoomControllerTest extends TestCase
             'name' => 'the room',
             'number' => '24',
             'floor' => '2009',
+            'description' => 'my description',
             'building' => config(self::BUILDING_NAMES)[0],
             'status' => 'available',
             'room_type' => config(self::ROOM_TYPES)[0],
@@ -335,7 +359,7 @@ class RoomControllerTest extends TestCase
 
         $this->assertDatabaseHas('rooms', [
             'name' => $room->name, 'number' => $room->number,
-            'floor' => $room->floor, 'building' => $room->building,
+            'floor' => $room->floor, 'building' => $room->building, 'description' => $room->description,
             'status' => $room->status, 'attributes' => json_encode($room->attributes),
         ]);
 
@@ -343,6 +367,7 @@ class RoomControllerTest extends TestCase
             'name' => 'the room',
             'number' => '24',
             'floor' => '2009',
+            'description' => 'my description',
             'building' => config(self::BUILDING_NAMES)[0],
             'status' => 'available',
             'room_type' => config(self::ROOM_TYPES)[0],
@@ -376,6 +401,7 @@ class RoomControllerTest extends TestCase
             'name' => 'the room',
             'number' => '24',
             'floor' => '2009',
+            'description' => 'my description',
             'building' => config(self::BUILDING_NAMES)[0],
             'status' => 'available',
             'room_type' => config(self::ROOM_TYPES)[0],
@@ -412,6 +438,7 @@ class RoomControllerTest extends TestCase
             'name' => 'the room',
             'number' => '24',
             'floor' => '2009',
+            'description' => 'my description',
             'building' => config(self::BUILDING_NAMES)[0],
             'status' => 'available',
             'room_type' => config(self::ROOM_TYPES)[0],
@@ -476,5 +503,34 @@ class RoomControllerTest extends TestCase
 
         $response->assertStatus(302);
         $this->assertDatabaseMissing('rooms', ['name' => $room->name]);
+    }
+
+    /**
+     * @test
+     */
+    public function admins_can_update_room_images()
+    {
+        $room = Room::factory()->create();
+        $this->assertDatabaseHas('rooms', [
+            'name' => $room->name, 'number' => $room->number,
+            'floor' => $room->floor, 'building' => $room->building,
+            'status' => $room->status, 'attributes' => json_encode($room->attributes),
+        ]);
+
+        Storage::fake('public');
+        $random = Str::random(10);
+        $file = UploadedFile::fake()->image($random . '.png');
+
+        $response = $this->actingAs($this->createUserWithPermissions(['rooms.update']))->post('/admin/rooms/updateRoomImage', [
+            'room_id' => $room->id,
+            'new_image' => $file
+        ]);
+
+        $response->assertStatus(302);
+
+        $this->assertDatabaseHas('rooms', [
+            'id' => $room->id,
+            'image' => '/storage/rooms/' . $file->hashName()
+        ]);
     }
 }
