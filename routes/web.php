@@ -158,6 +158,10 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
             ->name('index')
             ->middleware(['permission:bookings.create']);
 
+        Route::get('/calendar', [BookingRequestController::class, 'calendar'])
+            ->name('calendar');
+
+
         Route::get('/create', [BookingRequestController::class, 'create'])
             ->name('create')
             ->middleware(['permission:bookings.create']);

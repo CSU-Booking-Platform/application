@@ -280,9 +280,24 @@ class BookingRequestController extends Controller
         ]);
     }
 
+    public function calendar()
+    {
+
+        return inertia('Requestee/BookingCalendar', [
+            'reservations' => Reservation::all()->map(function ($reservations){
+                return[
+                    'id' => $reservations->id,
+                    'title' => Room::find($reservations->room_id)->name,
+                    'startDate' => date_format($reservations->start_time,"Y-m-d"),
+                    'endDate' => date_format($reservations->end_time,"Y-m-d")
+                ];
+            })
+        ]);
+    }
+
     private function reservationValidate(Request $request)
     {
-      
+
         $request->validate(array(
             'reservations.*' => ['array', 'size:3',
                 function ($attribute, $value, $fail) use ($request) {
