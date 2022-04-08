@@ -6,6 +6,7 @@
         :show-date="showDate"
         :items="items"
         :currentPeriodLabel="currentPeriodLabel"
+        @click-item = "onClickItem"
         class="theme-default holiday-us-traditional holiday-us-official">
         <template #header="{ headerProps }">
           <calendar-view-header
@@ -51,6 +52,7 @@ export default {
         return []
       },
     },
+    canViewBookings: Boolean
   },
   components: {
     AppLayout,
@@ -61,6 +63,14 @@ export default {
   methods: {
     setShowDate(d) {
       this.showDate = d;
+    },
+    onClickItem(e) {
+      //console.log(e)
+      //alert(`you clicked ${e.originalItem.url}!`)
+      if(canViewBookings){
+        window.open(e.originalItem.url, '_blank').focus();
+      }
+      //this.message = `You clicked: ${e.title}`
     },
   },
   mounted() {
