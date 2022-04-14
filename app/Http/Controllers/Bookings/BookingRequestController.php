@@ -30,23 +30,23 @@ use App\Http\Resources\BookingCollection;
 class BookingRequestController extends Controller
 {
 
-  /**
-   * @var string sole purpose is to silence SonorCloud
-   */
-  private string $reservationRoom = 'reservations.room';
+    /**
+     * @var string sole purpose is to silence SonorCloud
+     */
+    private string $reservationRoom = 'reservations.room';
 
-  private const RESERVATIONS_SESSION_KEY = "create_booking_form";
+    private const RESERVATIONS_SESSION_KEY = "create_booking_form";
 
-  private const DATE_FORMAT = "F j, Y, g:i a";
+    private const DATE_FORMAT = "F j, Y, g:i a";
 
-  private const ROOM_PAGINATOR_AMOUNT = 10;
+    private const ROOM_PAGINATOR_AMOUNT = 10;
 
-  /**
-   * Display a listing of the resource.
-   *
-   * @param Request $request
-   * @return Response|\Inertia\Response|ResponseFactory
-   */
+    /**
+     * Display a listing of the resource.
+     *
+     * @param Request $request
+     * @return Response|\Inertia\Response|ResponseFactory
+     */
     public function index(Request $request)
     {
         return inertia('Admin/BookingRequests/Index', [
@@ -56,33 +56,33 @@ class BookingRequestController extends Controller
         ]);
     }
 
-  public function createInit(Request $request)
-  {
-    $data = $request->validate([
-      'room_id' => ['integer', 'exists:rooms,id'],
-      'reservations' => ['required'],
-      'reservations.*.start_time' => [
-        'required',
-        'date',
-      ],
-      'reservations.*.end_time' => [
-        'required',
-        'date',
-      ],
-      'reservations.*.duration' => [
-        'required',
-        'integer',
-        'min:30',
-      ],
-    ]);
+    public function createInit(Request $request)
+    {
+        $data = $request->validate([
+            'room_id' => ['integer', 'exists:rooms,id'],
+            'reservations' => ['required'],
+            'reservations.*.start_time' => [
+                'required',
+                'date',
+            ],
+            'reservations.*.end_time' => [
+                'required',
+                'date',
+            ],
+            'reservations.*.duration' => [
+                'required',
+                'integer',
+                'min:30',
+            ],
+        ]);
 
-    $this->reservationValidate($request);
+        $this->reservationValidate($request);
 
-    Session::remove(self::RESERVATIONS_SESSION_KEY);
-    Session::push(self::RESERVATIONS_SESSION_KEY, $data);
+        Session::remove(self::RESERVATIONS_SESSION_KEY);
+        Session::push(self::RESERVATIONS_SESSION_KEY, $data);
 
-    return redirect()->route('bookings.create');
-  }
+        return redirect()->route('bookings.create');
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -91,28 +91,28 @@ class BookingRequestController extends Controller
      */
     public function create()
     {
-      if (!Session::has(self::RESERVATIONS_SESSION_KEY)) {
-        return redirect()->route('bookings.search');
-      } else {
-        $data = Session::get(self::RESERVATIONS_SESSION_KEY)[0];
+        if (!Session::has(self::RESERVATIONS_SESSION_KEY)) {
+            return redirect()->route('bookings.search');
+        } else {
+            $data = Session::get(self::RESERVATIONS_SESSION_KEY)[0];
 
-        return inertia('Requestee/BookingForm', [
-          // example of the expected reservations format
-          'room' => Room::findOrFail($data['room_id']),
-          'reservations' => $data['reservations'],
-          'bookings_general_information' => Settings::select('data')->where('slug', '=', 'general_information')->first(),
-          'bookings_event_description' => Settings::select('data')->where('slug', '=', 'event_description')->first()
-        ]);
-      }
+            return inertia('Requestee/BookingForm', [
+                // example of the expected reservations format
+                'room' => Room::findOrFail($data['room_id']),
+                'reservations' => $data['reservations'],
+                'bookings_general_information' => Settings::select('data')->where('slug', '=', 'general_information')->first(),
+                'bookings_event_description' => Settings::select('data')->where('slug', '=', 'event_description')->first()
+            ]);
+        }
     }
 
-  /**
-   * Store a newly created resource in storage.
-   *
-   * @param CreateBookingRequest $request
-   * @return RedirectResponse
-   * @throws ValidationException
-   */
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param CreateBookingRequest $request
+     * @return RedirectResponse
+     * @throws ValidationException
+     */
     public function store(CreateBookingRequest $request)
     {
         $data = $request->validated();
@@ -174,14 +174,14 @@ class BookingRequestController extends Controller
     }
 
     /**
-   * Show the form for editing the specified resource.
-   *
-   * @param BookingRequest $booking
-   * @return RedirectResponse|Response|\Inertia\Response|ResponseFactory
-   */
+     * Show the form for editing the specified resource.
+     *
+     * @param BookingRequest $booking
+     * @return RedirectResponse|Response|\Inertia\Response|ResponseFactory
+     */
     public function edit(BookingRequest $booking)
     {
-        if ($booking->status == BookingRequest::REVIEW || $booking->status == BookingRequest::APPROVED ) {
+        if ($booking->status == BookingRequest::REVIEW || $booking->status == BookingRequest::APPROVED) {
             return redirect()->route('bookings.view', ['booking' => $booking]);
         }
 
@@ -195,7 +195,7 @@ class BookingRequestController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  UpdateBookingRequest  $request
+     * @param UpdateBookingRequest $request
      * @param BookingRequest $booking
      * @return RedirectResponse
      */
@@ -203,7 +203,7 @@ class BookingRequestController extends Controller
     {
 
         //If comments don't call this
-        if ($booking->status == BookingRequest::REVIEW || $booking->status == BookingRequest::APPROVED ) {
+        if ($booking->status == BookingRequest::REVIEW || $booking->status == BookingRequest::APPROVED) {
             return redirect()->route('bookings.view', ['booking' => $booking]);
         }
 
@@ -212,8 +212,8 @@ class BookingRequestController extends Controller
         $booking->status = BookingRequest::PENDING;
         $booking->save();
 
-        if($booking->wasChanged()) {
-            $log = '[' . date(self::DATE_FORMAT). '] - Updated booking request location and/or date';
+        if ($booking->wasChanged()) {
+            $log = '[' . date(self::DATE_FORMAT) . '] - Updated booking request location and/or date';
             BookingRequestUpdated::dispatch($booking, $log);
         }
 
@@ -233,17 +233,17 @@ class BookingRequestController extends Controller
             ->with('flash', ['banner' => 'Your Booking Request was updated!']);
     }
 
-  /**
-   * Remove the specified resource from storage.
-   *
-   * @param BookingRequest $booking
-   * @return RedirectResponse
-   * @throws Exception
-   */
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param BookingRequest $booking
+     * @return RedirectResponse
+     * @throws Exception
+     */
     public function destroy(BookingRequest $booking)
     {
         $reservation = $booking->reservations->first();
-        $path = "bookings/{$reservation->room_id}_".strtotime($reservation->start_time).'_reference';
+        $path = "bookings/{$reservation->room_id}_" . strtotime($reservation->start_time) . '_reference';
         Storage::disk('public')->deleteDirectory($path);
 
         Reservation::where('booking_request_id', $booking->id)->delete();
@@ -258,8 +258,8 @@ class BookingRequestController extends Controller
 
         $fileName = "Booking#{$booking->id} " . now()->toDateTimeString() . '.zip';
 
-        if($zip->open(Storage::path($fileName), ZipArchive::CREATE) === true) {
-            foreach ($booking->reference as $file){
+        if ($zip->open(Storage::path($fileName), ZipArchive::CREATE) === true) {
+            foreach ($booking->reference as $file) {
                 $name = $file['name'];
                 $path = Storage::disk('public')->path($file['path']);
                 $zip->addFile($path, $name);
@@ -280,23 +280,48 @@ class BookingRequestController extends Controller
         ]);
     }
 
+    public function calendar()
+    {
+        $user = auth()->user();
+        $canViewBookings = false;
+        if (!is_null($user)) {
+            if ($user->can->contains("bookings.approve")) {
+                $canViewBookings = true;
+            }
+        }
+
+        return inertia('Requestee/BookingCalendar', [
+            'reservations' => Reservation::whereHas('bookingRequest', function ($query) {
+                return $query->where('status', '=', 'approved');
+            })->get()->map(function ($reservations) {
+                return [
+                    'id' => $reservations->id,
+                    'title' => Room::find($reservations->room_id)->name,
+                    'startDate' => date_format($reservations->start_time, "Y-m-d H:i"),
+                    'endDate' => date_format($reservations->end_time, "Y-m-d H:i"),
+                    'url' => $reservations->booking_request_id . '/review'
+
+                ];
+            }),
+            'canViewBookings' => $canViewBookings
+        ]);
+    }
+
     private function reservationValidate(Request $request)
     {
-      
+
         $request->validate(array(
             'reservations.*' => ['array', 'size:3',
                 function ($attribute, $value, $fail) use ($request) {
-                    if(!$request->has('event'))
-                    {
-                        $alcohol  = false;
+                    if (!$request->has('event')) {
+                        $alcohol = false;
                         $food = false;
-                    }
-                    else {
-                        $alcohol  = $request->input('event.alcohol') ?? false;
+                    } else {
+                        $alcohol = $request->input('event.alcohol') ?? false;
                         $food = ($request->input('event.food.low_risk') || $request->input('event.food.high_risk'));
                     }
                     unset($attribute);
-                    $user =  $request->user();
+                    $user = $request->user();
                     $room = Room::query()->findOrFail($request->room_id);
                     $room->minimumReservationTime($value['start_time'], $value['end_time'], $fail);
                     if (!$user->hasPermissionTo('bookings.restrictions.override')) {
@@ -307,8 +332,8 @@ class BookingRequestController extends Controller
                                 ' booking(s) in the next ' .
                                 $user->getUserNumberOfDaysPerPeriod() .
                                 ' days.');
-                    }
                         }
+                    }
                     $room->verifyDatetimesAreWithinAvailabilitiesValidation($value['start_time'], $value['end_time'], $fail);//
                     $room->verifyRoomIsNotBlackedOutValidation($value['start_time'], $value['end_time'], $fail);//
                     $room->verifyRoomIsFreeValidation($value['start_time'], $value['end_time'], $fail);
@@ -337,7 +362,7 @@ class BookingRequestController extends Controller
         // Filter by status, assignee, dates if present in query
         $query = BookingRequest::with('requester');
 
-        if($request->status_list){
+        if ($request->status_list) {
             $activeStatuses = [];
             foreach ($request->status_list as $key => $value) {
                 if ($value) {
@@ -348,15 +373,15 @@ class BookingRequestController extends Controller
         }
 
 
-        if($request->date_range_start){
+        if ($request->date_range_start) {
             $query->where('created_at', '>', $request->date_range_start);
         }
 
-        if($request->date_range_end){
+        if ($request->date_range_end) {
             $query->where('created_at', '<', $request->date_range_end);
         }
 
-        if($request->data_reviewers){
+        if ($request->data_reviewers) {
             $uids = collect($request->data_reviewers)->pluck('text');
             $query->whereIn('id', $uids);
         }
@@ -398,19 +423,19 @@ class BookingRequestController extends Controller
         // None of the request fields are mandatory, only
         // filter the ones provided from request
         $request->validate([
-            'dateCheck' => ['date','nullable'],
-            'selectStatus' => ['string','nullable', Rule::in(BookingRequest::STATUS_TYPES)],
+            'dateCheck' => ['date', 'nullable'],
+            'selectStatus' => ['string', 'nullable', Rule::in(BookingRequest::STATUS_TYPES)],
         ]);
 
         $query = BookingRequest::with('requester', $this->reservationRoom)
             ->where('user_id', auth()->user()->id);
 
-        if ($request->selectStatus){
+        if ($request->selectStatus) {
             $query = $query->where('status', $request->selectStatus);
         }
 
         if ($request->dateCheck) {
-            $query = $query->whereHas('reservations', function($q) use ($request) {
+            $query = $query->whereHas('reservations', function ($q) use ($request) {
                 $date = Carbon::parse($request->dateCheck);
                 $q->whereDate('start_time', $date)->orWhereDate('end_time', $date);
             });

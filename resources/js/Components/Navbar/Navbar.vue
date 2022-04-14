@@ -20,7 +20,7 @@
                   href="/dashboard"
                   :active="$page.currentRouteName === 'dashboard'"
                 >
-                  Home
+                  Homes
                 </jet-nav-link>
                 <jet-nav-link
                   v-if="showBookingSubnav()"
@@ -29,6 +29,15 @@
                 >
                   Bookings
                 </jet-nav-link>
+
+                <jet-nav-link
+                  v-if="showBookingSubnav()"
+                  :href="'/bookings/calendar'"
+                  :active="calendarSubnavIsActive()"
+                >
+                  Calendar
+                </jet-nav-link>
+
                 <jet-nav-link
                   v-if="showAdminSubnav()"
                   href="/admin/rooms"
@@ -145,7 +154,7 @@
             >
               <span>Review</span>
               <span v-if="$page.user.bookings_to_review_count > 0"
-                class="px-2 py-1 ml-2 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full"
+                    class="px-2 py-1 ml-2 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full"
               >
                 {{ $page.user.bookings_to_review_count }}
               </span>
@@ -235,7 +244,7 @@ export default {
   },
 
   mounted() {
-      this.setIsCreatingBooking();
+    this.setIsCreatingBooking();
   },
 
   methods: {
@@ -285,6 +294,14 @@ export default {
           return false
       }
     },
+    calendarSubnavIsActive() {
+      switch (this.$page.currentRouteName) {
+        case 'bookings.calendar':
+          return true;
+        default:
+          return false
+      }
+    },
     showBookingSubnav() {
       return this.userHasPermissionWithPrefix("bookings");
     },
@@ -292,8 +309,7 @@ export default {
     setIsCreatingBooking() {
       if (localStorage.isCreatingBooking == "true") {
         this.isCreatingBooking = true;
-      }
-      else {
+      } else {
         this.isCreatingBooking = false;
       }
     }
