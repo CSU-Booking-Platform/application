@@ -297,8 +297,8 @@ class BookingRequestController extends Controller
                 return [
                     'id' => $reservations->id,
                     'title' => Room::find($reservations->room_id)->name,
-                    'startDate' => date_format($reservations->start_time, "Y-m-d"),
-                    'endDate' => date_format($reservations->end_time, "Y-m-d"),
+                    'startDate' => date_format($reservations->start_time, "Y-m-d H:i"),
+                    'endDate' => date_format($reservations->end_time, "Y-m-d H:i"),
                     'url' => $reservations->booking_request_id . '/review'
 
                 ];

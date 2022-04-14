@@ -5,6 +5,7 @@
       <calendar-view
         :show-date="showDate"
         :items="items"
+        :show-times="showTimes"
         :currentPeriodLabel="currentPeriodLabel"
         @click-item = "onClickItem"
         class="theme-default holiday-us-traditional holiday-us-official">
@@ -42,6 +43,7 @@ export default {
     return {
       showDate: new Date(),
       items: [],
+      showTimes: true,
       currentPeriodLabel: "Today is " + currentDay + "-" + currentMonth
     }
   },
