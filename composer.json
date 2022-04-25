@@ -8,7 +8,7 @@
     ],
     "license": "MIT",
     "require": {
-        "php": "^7.4",
+        "php": "^8.0.12",
         "ext-json": "*",
         "ext-zip": "*",
         "enlightn/enlightn": "^1.7",
@@ -35,7 +35,7 @@
         "mockery/mockery": "^1.4.2",
         "noeldemartin/laravel-dusk-mocking": "^6.5",
         "nunomaduro/collision": "^5.0",
-        "nunomaduro/phpinsights": "^1.14",
+        "nunomaduro/phpinsights": "^2.2.0",
         "phpunit/phpunit": "^9.4",
         "roave/security-advisories": "dev-latest",
         "staudenmeir/dusk-updater": "^1.2"

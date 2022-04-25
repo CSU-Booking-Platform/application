@@ -68,8 +68,9 @@ export default {
     },
     onClickItem(e) {
       //console.log(e)
-      //alert(`you clicked ${e.originalItem.url}!`)
-      if(canViewBookings){
+     // alert(`you clicked ${e.originalItem.url}!`)
+      if(this.canViewBookings){
+   //     alert('you have rights!')
         window.open(e.originalItem.url, '_blank').focus();
       }
       //this.message = `You clicked: ${e.title}`
